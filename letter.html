@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangla Shikkho - Kids Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: #87CEEB; /* Sky blue */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            user-select: none;
+            overflow: hidden;
+        }
+        #app {
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 { color: #fff; text-shadow: 2px 2px 0px #000; margin-bottom: 30px; font-size: 28px;}
+        
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .card:active { transform: scale(0.95); }
+        
+        .bengali-letter {
+            font-size: 120px;
+            color: #FF6B6B;
+            margin: 10px 0;
+            line-height: 1;
+        }
+        .emoji { font-size: 80px; margin: 10px 0; }
+        .english-word { font-size: 24px; color: #333; font-weight: bold; }
+        .bengali-word { font-size: 28px; color: #555; }
+        
+        .btn {
+            background: #FF9F43;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 50px;
+            margin-top: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #d68910;
+            transition: transform 0.1s;
+            font-family: inherit;
+        }
+        .btn:active { transform: translateY(5px); box-shadow: 0 0px 0 #d68910; }
+        .speak-btn { background: #6AB04C; box-shadow: 0 5px 0 #218c4b; }
+
+        /* Quiz Styles */
+        #quiz-section { display: none; margin-top: 20px; }
+        .options { display: flex; justify-content: space-around; margin-top: 20px; }
+        .opt-btn {
+            background: white; border: 3px solid #FF6B6B; border-radius: 15px;
+            font-size: 50px; width: 80px; height: 80px; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .opt-btn:active { background: #FFEAA7; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <h1>?? ????? ???? ??</h1>
+    
+    <!-- Learning Mode -->
+    <div id="learning-mode">
+        <div class="card" onclick="speak(currentItem.word)">
+            <div class="bengali-letter" id="letter-display">?</div>
+            <div class="emoji" id="emoji-display">??</div>
+            <div class="bengali-word" id="word-display">??</div>
+            <div class="english-word" id="en-display">Aam (Mango)</div>
+        </div>
+        <button class="btn speak-btn" onclick="speak(currentItem.word)">?? ???? (Listen)</button>
+        <br>
+        <button class="btn" onclick="nextItem()">???? (Next) ??</button>
+    </div>
+
+    <!-- Quiz Mode (Mini Game) -->
+    <div id="quiz-section">
+        <h2>?? ???? (Game) ??</h2>
+        <p style="font-size: 24px; color: white;">??? ??? ?????? (Which letter is this?)</p>
+        <div class="card">
+            <div class="emoji" id="quiz-emoji">??</div>
+        </div>
+        <div class="options" id="quiz-options">
+            <!-- Options injected by JS -->
+        </div>
+    </div>
+
+    <button class="btn" id="mode-toggle" onclick="toggleMode()" style="background:#6c5ce7; box-shadow:0 5px 0 #5643c9;">? ???? ???? (Play Quiz)</button>
+</div>
+
+<script>
+    // Data: Bengali Vowels (Swaroborno) with matching words
+    const data = [
+        { letter: '?', word: '??', emoji: '??', en: 'Aam (Mango)' },
+        { letter: '?', word: '??', emoji: '??', en: 'Aai (Mother)' },
+        { letter: '?', word: '?????', emoji: '??', en: 'Indur (Mouse)' },
+        { letter: '?', word: '???', emoji: '??', en: 'Eagle' },
+        { letter: '?', word: '??', emoji: '??', en: 'Ut (Camel)' },
+        { letter: '?', word: '??', emoji: '??', en: 'Ek (One)' },
+        { letter: '?', word: '??', emoji: '??', en: 'Ol (Yam)' }
+    ];
+
+    let currentIndex = 0;
+    let currentItem = data[0];
+    let isQuizMode = false;
+
+    // Initialize Web Speech API for Audio
+    const synth = window.speechSynthesis;
+    
+    function speak(text) {
+        synth.cancel(); // stop previous audio
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'bn-IN'; // Bengali India
+        utterance.rate = 0.8; // Slow down for kids
+        synth.speak(utterance);
+    }
+
+    function renderLearning() {
+        currentItem = data[currentIndex];
+        document.getElementById('letter-display').innerText = currentItem.letter;
+        document.getElementById('emoji-display').innerText = currentItem.emoji;
+        document.getElementById('word-display').innerText = currentItem.word;
+        document.getElementById('en-display').innerText = currentItem.en;
+        speak(currentItem.word); // Auto speak when new item loads
+    }
+
+    function nextItem() {
+        currentIndex = (currentIndex + 1) % data.length;
+        renderLearning();
+    }
+
+    // --- Quiz Game Logic ---
+    function startQuiz() {
+        const correctItem = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('quiz-emoji').innerText = correctItem.emoji;
+        
+        // Generate 3 random wrong options
+        let options = [correctItem.letter];
+        while(options.length < 3) {
+            let rand = data[Math.floor(Math.random() * data.length)].letter;
+            if(!options.includes(rand)) options.push(rand);
+        }
+        options.sort(() => 0.5 - Math.random()); // Shuffle
+
+        const optsContainer = document.getElementById('quiz-options');
+        optsContainer.innerHTML = '';
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt, correctItem.letter, btn);
+            optsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct, btn) {
+        if(selected === correct) {
+            btn.style.background = '#55efc4';
+            speak("????! (Correct!)");
+            setTimeout(startQuiz, 1000); // Next question
+        } else {
+            btn.style.background = '#fab1a0';
+            btn.style.color = 'white';
+            speak("??????? ?????? ??? (Try again)");
+        }
+    }
+
+    function toggleMode() {
+        isQuizMode = !isQuizMode;
+        document.getElementById('learning-mode').style.display = isQuizMode ? 'none' : 'block';
+        document.getElementById('quiz-section').style.display = isQuizMode ? 'block' : 'none';
+        document.getElementById('mode-toggle').innerText = isQuizMode ? '???? (Learn)' : '? ???? ???? (Play Quiz)';
+        if(isQuizMode) startQuiz();
+    }
+
+    // Start app
+    renderLearning();
+</script>
+</body>
+</html>

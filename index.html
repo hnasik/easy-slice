@@ -1,18 +1,273 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangla Shikkho - Kids Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: #87CEEB;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            user-select: none;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+        #app {
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 { color: #fff; text-shadow: 2px 2px 0px #000; margin-bottom: 20px; font-size: 28px;}
+        
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            margin-bottom: 10px;
+        }
+        .card:active { transform: scale(0.95); }
+        
+        .bengali-letter { font-size: 100px; color: #FF6B6B; margin: 10px 0; line-height: 1; }
+        .emoji { font-size: 70px; margin: 10px 0; }
+        .english-word { font-size: 20px; color: #333; font-weight: bold; }
+        .bengali-word { font-size: 26px; color: #555; }
+        
+        .btn {
+            background: #FF9F43; color: white; border: none;
+            padding: 12px 25px; font-size: 18px; border-radius: 50px;
+            margin: 10px 5px 0px 5px; cursor: pointer;
+            box-shadow: 0 5px 0 #d68910; transition: transform 0.1s; font-family: inherit;
+        }
+        .btn:active { transform: translateY(5px); box-shadow: 0 0px 0 #d68910; }
+        .speak-btn { background: #6AB04C; box-shadow: 0 5px 0 #218c4b; }
+        .nav-btns { display: flex; justify-content: center; }
+
+        #quiz-section { display: none; margin-top: 10px; }
+        .score-board {
+            background: #fff; border-radius: 50px; padding: 10px 20px;
+            display: inline-block; font-size: 22px; font-weight: bold; color: #FF6B6B;
+            margin-bottom: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .opt-btn {
+            background: white; border: 3px solid #FF6B6B; border-radius: 15px;
+            font-size: 50px; height: 90px; cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .opt-btn:active { transform: scale(0.95); }
+        .correct-opt { background: #55efc4 !important; border-color: #00b894 !important; color: white; }
+        .wrong-opt { background: #fab1a0 !important; border-color: #d63031 !important; color: white; }
+    </style>
+</head>
 <body>
-<button onclick="test()">Play</button>
+
+<div id="app">
+    <h1>🍎 বাংলা শেখো 🍌</h1>
+    
+    <!-- Learning Mode -->
+    <div id="learning-mode">
+        <div class="card" onclick="playOnlineAudio(currentItem.word)">
+            <div class="bengali-letter" id="letter-display">অ</div>
+            <div class="emoji" id="emoji-display">🥭</div>
+            <div class="bengali-word" id="word-display">আম</div>
+            <div class="english-word" id="en-display">Aam (Mango)</div>
+        </div>
+        <button class="btn speak-btn" onclick="playOnlineAudio(currentItem.word)">🔊 শুনি (Listen)</button>
+        <div class="nav-btns">
+            <button class="btn" onclick="prevItem()">⬅️ আগের</button>
+            <button class="btn" onclick="nextItem()">পরের ➡️</button>
+        </div>
+    </div>
+
+    <!-- Quiz Mode -->
+    <div id="quiz-section">
+        <div class="score-board">⭐ Score: <span id="score">0</span></div>
+        <h2 style="color:white; text-shadow: 1px 1px 0 #000;">এটা কি? (What is this?)</h2>
+        <div class="card">
+            <div class="emoji" id="quiz-emoji" style="font-size: 90px;">🥭</div>
+        </div>
+        <p style="font-size: 20px; color: white; font-weight: bold;">সঠিক অক্ষরটি বেছে নাও:</p>
+        <div class="options" id="quiz-options"></div>
+    </div>
+
+    <button class="btn" id="mode-toggle" onclick="toggleMode()" style="background:#6c5ce7; box-shadow:0 5px 0 #5643c9; margin-top: 25px;">ই খেলা খেলি (Play Quiz)</button>
+</div>
+
+<audio id="audio-player" src=""></audio>
 
 <script>
-function test() {
-    var a = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
-    a.play().then(()=>{
-        alert("Playing");
-    }).catch(e=>{
-        alert(e);
-    });
-}
-</script>
+    // Complete Data: Vowels and Consonants
+    const data = [
+        { letter: 'অ', word: 'আম', emoji: '🥭', en: 'Aam (Mango)' },
+        { letter: 'আ', word: 'আই', emoji: '👩', en: 'Aai (Mother)' },
+        { letter: 'ই', word: 'ইঁদুর', emoji: '🐭', en: 'Indur (Mouse)' },
+        { letter: 'ঈ', word: 'ঈগল', emoji: '🦅', en: 'Eagle' },
+        { letter: 'উ', word: 'উট', emoji: '🐫', en: 'Ut (Camel)' },
+        { letter: 'এ', word: 'এক', emoji: '☝️', en: 'Ek (One)' },
+        { letter: 'ও', word: 'ওল', emoji: '🍠', en: 'Ol (Yam)' },
+        { letter: 'ক', word: 'কাক', emoji: '🐦‍⬛', en: 'Kak (Crow)' },
+        { letter: 'খ', word: 'খরগোশ', emoji: '🐰', en: 'Khoragosh (Rabbit)' },
+        { letter: 'গ', word: 'গম', emoji: '🌾', en: 'Gom (Wheat)' },
+        { letter: 'ঘ', word: 'ঘোড়া', emoji: '🐴', en: 'Ghora (Horse)' },
+        { letter: 'চ', word: 'চাঁদ', emoji: '🌙', en: 'Chand (Moon)' },
+        { letter: 'ছ', word: 'ছাগল', emoji: '🐐', en: 'Chagol (Goat)' },
+        { letter: 'জ', word: 'জল', emoji: '💧', en: 'Jol (Water)' },
+        { letter: 'ঝ', word: 'ঝিনুক', emoji: '🐚', en: 'Jhinuk (Shell)' },
+        { letter: 'ট', word: 'টিকটিকি', emoji: '🦎', en: 'Tiktiki (Lizard)' },
+        { letter: 'ঠ', word: 'ঠ্যাং', emoji: '🦵', en: 'Thyag (Leg)' },
+        { letter: 'ড', word: 'ডাল', emoji: '🪵', en: 'Dal (Branch)' },
+        { letter: 'ঢ', word: 'ঢোল', emoji: '🥁', en: 'Dhol (Drum)' },
+        { letter: 'ত', word: 'তারা', emoji: '⭐', en: 'Tara (Star)' },
+        { letter: 'থ', word: 'থালা', emoji: '🍽️', en: 'Thala (Plate)' },
+        { letter: 'দ', word: 'দিন', emoji: '☀️', en: 'Din (Day)' },
+        { letter: 'ধ', word: 'ধনুক', emoji: '🏹', en: 'Dhonuk (Bow)' },
+        { letter: 'ন', word: 'নৌকা', emoji: '⛵', en: 'Nouka (Boat)' },
+        { letter: 'প', word: 'পদ্ম', emoji: '🪷', en: 'Pordmo (Lotus)' },
+        { letter: 'ফ', word: 'ফল', emoji: '🍎', en: 'Fol (Fruit)' },
+        { letter: 'ব', word: 'বলদ', emoji: '🐂', en: 'Bolod (Ox)' },
+        { letter: 'ভ', word: 'ভালুক', emoji: '🐻', en: 'Bhaluk (Bear)' },
+        { letter: 'ম', word: 'মাছ', emoji: '🐟', en: 'Mach (Fish)' },
+        { letter: 'য', word: 'যম', emoji: '💀', en: 'Jom (Yam)' },
+        { letter: 'র', word: 'রাজা', emoji: '🤴', en: 'Raja (King)' },
+        { letter: 'ল', word: 'লাটিম', emoji: '🪀', en: 'Latim (Top)' },
+        { letter: 'শ', word: 'শিয়াল', emoji: '🦊', en: 'Shiyal (Fox)' },
+        { letter: 'ষ', word: 'ষাঁড়', emoji: '🐃', en: 'Shor (Bull)' },
+        { letter: 'স', word: 'সিংহ', emoji: '🦁', en: 'Singho (Lion)' },
+        { letter: 'হ', word: 'হাতি', emoji: '🐘', en: 'Hati (Elephant)' }
+    ];
 
+    let currentIndex = 0;
+    let currentItem = data[0];
+    let isQuizMode = false;
+    let score = 0;
+    let audioUnlocked = false;
+    const audioPlayer = document.getElementById('audio-player');
+
+    // THIS IS THE MAGIC FUNCTION THAT PLAYS AUDIO FROM ONLINE
+    function playOnlineAudio(text) {
+        if (!text) return;
+        
+        // We use a Google Translate URL that generates an MP3 voice on the fly
+        let url = "https://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(text) + "&tl=bn&client=tw-ob";
+        
+        audioPlayer.src = url;
+        audioPlayer.play().catch(e => {
+            console.log("Audio waiting for user interaction...");
+        });
+    }
+
+    // Unlock audio on first tap (Mobile browsers require this)
+    function unlockAudio() {
+        if (!audioUnlocked) {
+            audioUnlocked = true;
+            playOnlineAudio(currentItem.word);
+        }
+    }
+    document.addEventListener('click', unlockAudio, { once: true });
+
+    // --- Learning Mode ---
+    function renderLearning() {
+        currentItem = data[currentIndex];
+        document.getElementById('letter-display').innerText = currentItem.letter;
+        document.getElementById('emoji-display').innerText = currentItem.emoji;
+        document.getElementById('word-display').innerText = currentItem.word;
+        document.getElementById('en-display').innerText = currentItem.en;
+        if (audioUnlocked) playOnlineAudio(currentItem.word); 
+    }
+
+    function nextItem() {
+        currentIndex = (currentIndex + 1) % data.length;
+        renderLearning();
+    }
+
+    function prevItem() {
+        currentIndex = (currentIndex - 1 + data.length) % data.length;
+        renderLearning();
+    }
+
+    // --- Quiz Game Logic ---
+    function startQuiz() {
+        const correctItem = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('quiz-emoji').innerText = correctItem.emoji;
+        
+        let options = [correctItem];
+        let availableWrong = data.filter(item => item.letter !== correctItem.letter);
+        
+        availableWrong.sort(() => 0.5 - Math.random());
+        options.push(availableWrong[0]);
+        options.push(availableWrong[1]);
+        
+        options.sort(() => 0.5 - Math.random());
+
+        const optsContainer = document.getElementById('quiz-options');
+        optsContainer.innerHTML = '';
+        
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = opt.letter;
+            btn.dataset.word = opt.word; // Save the word so we can speak it if correct
+            btn.onclick = () => checkAnswer(opt.letter, correctItem.letter, btn);
+            optsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct, btn) {
+        let allBtns = document.querySelectorAll('.opt-btn');
+        allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+        if(selected === correct) {
+            btn.classList.add('correct-opt');
+            score++;
+            document.getElementById('score').innerText = score;
+            
+            // Speak the correct word
+            playOnlineAudio(btn.dataset.word);
+
+            setTimeout(() => {
+                allBtns.forEach(b => b.style.pointerEvents = 'auto');
+                startQuiz();
+            }, 2000);
+        } else {
+            btn.classList.add('wrong-opt');
+            
+            // Highlight the correct one in green
+            allBtns.forEach(b => {
+                if(b.innerText === correct) b.classList.add('correct-opt');
+            });
+            
+            setTimeout(() => {
+                allBtns.forEach(b => b.style.pointerEvents = 'auto');
+                startQuiz();
+            }, 2500);
+        }
+    }
+
+    function toggleMode() {
+        isQuizMode = !isQuizMode;
+        document.getElementById('learning-mode').style.display = isQuizMode ? 'none' : 'block';
+        document.getElementById('quiz-section').style.display = isQuizMode ? 'block' : 'none';
+        document.getElementById('mode-toggle').innerText = isQuizMode ? 'পড়ি (Learn)' : 'ই খেলা খেলি (Play Quiz)';
+        if(isQuizMode) {
+            score = 0;
+            document.getElementById('score').innerText = score;
+            startQuiz();
+        } else {
+            renderLearning();
+        }
+    }
+
+    // Start app
+    renderLearning();
+</script>
 </body>
 </html>

@@ -2,272 +2,446 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bangla Shikkho - Kids Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vehicle Expense Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
-            background-color: #87CEEB;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            user-select: none;
-            padding: 20px 0;
-            box-sizing: border-box;
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --text-dark: #e0f2fe;
+            --text-light: #94a3b8;
+            --neon-blue: #60a5fa;
+            --neon-cyan: #22d3ee;
+            --success: #2ecc71;
+            --danger: #ff7675;
+            --border-light: rgba(79, 172, 254, 0.3);
+            --card-bg: rgba(30, 41, 59, 0.6);
         }
-        #app {
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-        h1 { color: #fff; text-shadow: 2px 2px 0px #000; margin-bottom: 20px; font-size: 28px;}
-        
-        .card {
-            background: white;
-            border-radius: 25px;
-            padding: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
-            margin-bottom: 10px;
-        }
-        .card:active { transform: scale(0.95); }
-        
-        .bengali-letter { font-size: 100px; color: #FF6B6B; margin: 10px 0; line-height: 1; }
-        .emoji { font-size: 70px; margin: 10px 0; }
-        .english-word { font-size: 20px; color: #333; font-weight: bold; }
-        .bengali-word { font-size: 26px; color: #555; }
-        
-        .btn {
-            background: #FF9F43; color: white; border: none;
-            padding: 12px 25px; font-size: 18px; border-radius: 50px;
-            margin: 10px 5px 0px 5px; cursor: pointer;
-            box-shadow: 0 5px 0 #d68910; transition: transform 0.1s; font-family: inherit;
-        }
-        .btn:active { transform: translateY(5px); box-shadow: 0 0px 0 #d68910; }
-        .speak-btn { background: #6AB04C; box-shadow: 0 5px 0 #218c4b; }
-        .nav-btns { display: flex; justify-content: center; }
 
-        #quiz-section { display: none; margin-top: 10px; }
-        .score-board {
-            background: #fff; border-radius: 50px; padding: 10px 20px;
-            display: inline-block; font-size: 22px; font-weight: bold; color: #FF6B6B;
-            margin-bottom: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .opt-btn {
-            background: white; border: 3px solid #FF6B6B; border-radius: 15px;
-            font-size: 50px; height: 90px; cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            display: flex; align-items: center; justify-content: center;
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            display: flex; justify-content: center; align-items: flex-start;
+            padding: 20px; color: var(--text-dark);
         }
-        .opt-btn:active { transform: scale(0.95); }
-        .correct-opt { background: #55efc4 !important; border-color: #00b894 !important; color: white; }
-        .wrong-opt { background: #fab1a0 !important; border-color: #d63031 !important; color: white; }
+
+        .app-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%; max-width: 450px;
+            padding: 25px; border-radius: 30px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(79, 172, 254, 0.15);
+            margin-bottom: 30px;
+        }
+
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        
+        .vehicle-select {
+            background: rgba(79, 172, 254, 0.1);
+            border: 1px solid var(--border-light);
+            color: var(--neon-blue); padding: 8px 12px;
+            border-radius: 10px; font-family: inherit;
+            font-size: 0.9rem; outline: none; cursor: pointer;
+        }
+
+        .header h1 { font-size: 1.2rem; color: #fff; font-weight: 500; }
+        .header p { font-size: 0.8rem; color: var(--text-light); text-align: right; }
+
+        /* Total Spent Card */
+        .total-card {
+            background: linear-gradient(145deg, rgba(79, 172, 254, 0.1), rgba(34, 211, 238, 0.05));
+            border: 1px solid var(--border-light);
+            padding: 25px; border-radius: 20px;
+            text-align: center; margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(79, 172, 254, 0.1);
+        }
+
+        .total-label { font-size: 0.9rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .total-amount { font-size: 2.5rem; font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(79, 172, 254, 0.5); }
+        .total-sub { font-size: 0.85rem; color: var(--success); margin-top: 5px; }
+
+        /* Quick Stats */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-title { font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+        .stat-value { font-size: 1.1rem; font-weight: 600; color: #fff; }
+
+        /* List Header */
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .list-header h2 { font-size: 1.1rem; color: #fff; }
+        .clear-btn { background: none; border: none; color: var(--danger); font-size: 0.85rem; cursor: pointer; }
+
+        /* Expense List */
+        .expense-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .expense-list::-webkit-scrollbar { width: 4px; }
+        .expense-list::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+        .expense-item {
+            background: var(--card-bg);
+            padding: 15px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: transform 0.2s;
+        }
+        .expense-item:active { transform: scale(0.98); }
+
+        .exp-info { display: flex; align-items: center; gap: 12px; }
+        .exp-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .exp-details h4 { font-size: 0.95rem; color: #fff; font-weight: 500; }
+        .exp-details p { font-size: 0.75rem; color: var(--text-light); }
+        
+        .exp-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+        .exp-amount { font-size: 1rem; font-weight: 600; color: var(--neon-cyan); }
+        .delete-btn { background: none; border: none; color: var(--danger); font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
+        .delete-btn:hover { opacity: 1; }
+
+        .empty-state { text-align: center; color: var(--text-light); padding: 40px 0; }
+        .empty-state icon { font-size: 3rem; display: block; margin-bottom: 10px; }
+
+        /* Add Button */
+        .add-btn {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 60px; background: var(--neon-blue);
+            border: none; border-radius: 50%; color: #fff; font-size: 2rem;
+            cursor: pointer; box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10; transition: transform 0.2s;
+        }
+        .add-btn:active { transform: translateX(-50%) scale(0.9); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            background: #1e293b; width: 100%; max-width: 450px;
+            padding: 25px; border-radius: 30px 30px 0 0;
+            border-top: 1px solid var(--border-light);
+            transform: translateY(100%); transition: transform 0.3s ease-out;
+        }
+        .modal-overlay.show .modal { transform: translateY(0); }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: #fff; font-size: 1.3rem; }
+        .close-modal { background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; }
+        
+        .form-input, .form-select {
+            width: 100%; padding: 12px 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; color: #fff; font-family: inherit; font-size: 1rem;
+            outline: none; transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus { border-color: var(--neon-blue); }
+        .form-select option { background: #1e293b; }
+
+        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .cat-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            padding: 10px 5px; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            color: var(--text-light); cursor: pointer; transition: all 0.2s; font-size: 0.7rem;
+        }
+        .cat-btn span { font-size: 1.2rem; }
+        .cat-btn.active { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(79, 172, 254, 0.1); }
+
+        .submit-btn {
+            width: 100%; padding: 15px; margin-top: 10px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+            border: none; border-radius: 12px; color: #fff;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <h1>🍎 বাংলা শেখো 🍌</h1>
-    
-    <!-- Learning Mode -->
-    <div id="learning-mode">
-        <div class="card" onclick="playOnlineAudio(currentItem.word)">
-            <div class="bengali-letter" id="letter-display">অ</div>
-            <div class="emoji" id="emoji-display">🥭</div>
-            <div class="bengali-word" id="word-display">আম</div>
-            <div class="english-word" id="en-display">Aam (Mango)</div>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>Vehicle Expenses</h1>
+                <p id="current-month">Month</p>
+            </div>
+            <select id="vehicle-select" class="vehicle-select">
+                <option value="Bike">🏍️ Bike</option>
+                <option value="Car">🚗 Car</option>
+                <option value="Truck">🚚 Truck</option>
+            </select>
         </div>
-        <button class="btn speak-btn" onclick="playOnlineAudio(currentItem.word)">🔊 শুনি (Listen)</button>
-        <div class="nav-btns">
-            <button class="btn" onclick="prevItem()">⬅️ আগের</button>
-            <button class="btn" onclick="nextItem()">পরের ➡️</button>
+
+        <!-- Total Spent -->
+        <div class="total-card">
+            <div class="total-label">Total Spent This Month</div>
+            <div class="total-amount" id="total-amount">₹0</div>
+            <div class="total-sub" id="total-sub">No expenses added yet</div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-title">⛽ Fuel Cost</div>
+                <div class="stat-value" id="stat-fuel">₹0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-title">🔧 Maintenance</div>
+                <div class="stat-value" id="stat-maint">₹0</div>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="list-header">
+            <h2>Recent Transactions</h2>
+            <button class="clear-btn" onclick="clearAll()">Clear All</button>
+        </div>
+        
+        <div class="expense-list" id="expense-list">
+            <div class="empty-state">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🧾</div>
+                <p>No expenses added yet.<br>Click the + button to add one!</p>
+            </div>
         </div>
     </div>
 
-    <!-- Quiz Mode -->
-    <div id="quiz-section">
-        <div class="score-board">⭐ Score: <span id="score">0</span></div>
-        <h2 style="color:white; text-shadow: 1px 1px 0 #000;">এটা কি? (What is this?)</h2>
-        <div class="card">
-            <div class="emoji" id="quiz-emoji" style="font-size: 90px;">🥭</div>
+    <!-- Floating Add Button -->
+    <button class="add-btn" onclick="openModal()">+</button>
+
+    <!-- Add Expense Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Expense</h3>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select Category</label>
+                <div class="cat-grid" id="cat-grid">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Amount (in ₹)</label>
+                <input type="number" id="exp-amount" class="form-input" placeholder="e.g. 500" min="0">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" id="exp-date" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Note (Optional)</label>
+                <input type="text" id="exp-note" class="form-input" placeholder="e.g. Petrol pump near home">
+            </div>
+
+            <button class="submit-btn" onclick="saveExpense()">Save Expense</button>
         </div>
-        <p style="font-size: 20px; color: white; font-weight: bold;">সঠিক অক্ষরটি বেছে নাও:</p>
-        <div class="options" id="quiz-options"></div>
     </div>
 
-    <button class="btn" id="mode-toggle" onclick="toggleMode()" style="background:#6c5ce7; box-shadow:0 5px 0 #5643c9; margin-top: 25px;">ই খেলা খেলি (Play Quiz)</button>
-</div>
+    <script>
+        // --- Data ---
+        const categories = [
+            { id: 'petrol', name: 'Petrol', icon: '⛽' },
+            { id: 'diesel', name: 'Diesel', icon: '🛢️' },
+            { id: 'service', name: 'Service', icon: '🔧' },
+            { id: 'toll', name: 'Toll', icon: '🛣️' },
+            { id: 'parking', name: 'Parking', icon: '🅿️' },
+            { id: 'fine', name: 'Fine', icon: '🚨' },
+            { id: 'insurance', name: 'Insurance', icon: '🛡️' },
+            { id: 'other', name: 'Other', icon: '📦' }
+        ];
 
-<audio id="audio-player" src=""></audio>
+        // --- Local Storage ---
+        function getStorageItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+        function setStorageItem(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
 
-<script>
-    // Complete Data: Vowels and Consonants
-    const data = [
-        { letter: 'অ', word: 'আম', emoji: '🥭', en: 'Aam (Mango)' },
-        { letter: 'আ', word: 'আই', emoji: '👩', en: 'Aai (Mother)' },
-        { letter: 'ই', word: 'ইঁদুর', emoji: '🐭', en: 'Indur (Mouse)' },
-        { letter: 'ঈ', word: 'ঈগল', emoji: '🦅', en: 'Eagle' },
-        { letter: 'উ', word: 'উট', emoji: '🐫', en: 'Ut (Camel)' },
-        { letter: 'এ', word: 'এক', emoji: '☝️', en: 'Ek (One)' },
-        { letter: 'ও', word: 'ওল', emoji: '🍠', en: 'Ol (Yam)' },
-        { letter: 'ক', word: 'কাক', emoji: '🐦‍⬛', en: 'Kak (Crow)' },
-        { letter: 'খ', word: 'খরগোশ', emoji: '🐰', en: 'Khoragosh (Rabbit)' },
-        { letter: 'গ', word: 'গম', emoji: '🌾', en: 'Gom (Wheat)' },
-        { letter: 'ঘ', word: 'ঘোড়া', emoji: '🐴', en: 'Ghora (Horse)' },
-        { letter: 'চ', word: 'চাঁদ', emoji: '🌙', en: 'Chand (Moon)' },
-        { letter: 'ছ', word: 'ছাগল', emoji: '🐐', en: 'Chagol (Goat)' },
-        { letter: 'জ', word: 'জল', emoji: '💧', en: 'Jol (Water)' },
-        { letter: 'ঝ', word: 'ঝিনুক', emoji: '🐚', en: 'Jhinuk (Shell)' },
-        { letter: 'ট', word: 'টিকটিকি', emoji: '🦎', en: 'Tiktiki (Lizard)' },
-        { letter: 'ঠ', word: 'ঠ্যাং', emoji: '🦵', en: 'Thyag (Leg)' },
-        { letter: 'ড', word: 'ডাল', emoji: '🪵', en: 'Dal (Branch)' },
-        { letter: 'ঢ', word: 'ঢোল', emoji: '🥁', en: 'Dhol (Drum)' },
-        { letter: 'ত', word: 'তারা', emoji: '⭐', en: 'Tara (Star)' },
-        { letter: 'থ', word: 'থালা', emoji: '🍽️', en: 'Thala (Plate)' },
-        { letter: 'দ', word: 'দিন', emoji: '☀️', en: 'Din (Day)' },
-        { letter: 'ধ', word: 'ধনুক', emoji: '🏹', en: 'Dhonuk (Bow)' },
-        { letter: 'ন', word: 'নৌকা', emoji: '⛵', en: 'Nouka (Boat)' },
-        { letter: 'প', word: 'পদ্ম', emoji: '🪷', en: 'Pordmo (Lotus)' },
-        { letter: 'ফ', word: 'ফল', emoji: '🍎', en: 'Fol (Fruit)' },
-        { letter: 'ব', word: 'বলদ', emoji: '🐂', en: 'Bolod (Ox)' },
-        { letter: 'ভ', word: 'ভালুক', emoji: '🐻', en: 'Bhaluk (Bear)' },
-        { letter: 'ম', word: 'মাছ', emoji: '🐟', en: 'Mach (Fish)' },
-        { letter: 'য', word: 'যম', emoji: '💀', en: 'Jom (Yam)' },
-        { letter: 'র', word: 'রাজা', emoji: '🤴', en: 'Raja (King)' },
-        { letter: 'ল', word: 'লাটিম', emoji: '🪀', en: 'Latim (Top)' },
-        { letter: 'শ', word: 'শিয়াল', emoji: '🦊', en: 'Shiyal (Fox)' },
-        { letter: 'ষ', word: 'ষাঁড়', emoji: '🐃', en: 'Shor (Bull)' },
-        { letter: 'স', word: 'সিংহ', emoji: '🦁', en: 'Singho (Lion)' },
-        { letter: 'হ', word: 'হাতি', emoji: '🐘', en: 'Hati (Elephant)' }
-    ];
+        let expenses = JSON.parse(getStorageItem('vehicleExpenses')) || [];
+        let currentVehicle = getStorageItem('currentVehicle') || 'Bike';
+        let selectedCategory = 'petrol';
 
-    let currentIndex = 0;
-    let currentItem = data[0];
-    let isQuizMode = false;
-    let score = 0;
-    let audioUnlocked = false;
-    const audioPlayer = document.getElementById('audio-player');
+        // --- DOM ---
+        const vehicleSelect = document.getElementById('vehicle-select');
+        const currentMonth = document.getElementById('current-month');
+        const totalAmount = document.getElementById('total-amount');
+        const totalSub = document.getElementById('total-sub');
+        const statFuel = document.getElementById('stat-fuel');
+        const statMaint = document.getElementById('stat-maint');
+        const expenseList = document.getElementById('expense-list');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const catGrid = document.getElementById('cat-grid');
 
-    // THIS IS THE MAGIC FUNCTION THAT PLAYS AUDIO FROM ONLINE
-    function playOnlineAudio(text) {
-        if (!text) return;
-        
-        // We use a Google Translate URL that generates an MP3 voice on the fly
-        let url = "https://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(text) + "&tl=bn&client=tw-ob";
-        
-        audioPlayer.src = url;
-        audioPlayer.play().catch(e => {
-            console.log("Audio waiting for user interaction...");
-        });
-    }
+        // --- Init ---
+        vehicleSelect.value = currentVehicle;
+        document.getElementById('exp-date').valueAsDate = new Date();
+        renderCategories();
+        updateUI();
 
-    // Unlock audio on first tap (Mobile browsers require this)
-    function unlockAudio() {
-        if (!audioUnlocked) {
-            audioUnlocked = true;
-            playOnlineAudio(currentItem.word);
-        }
-    }
-    document.addEventListener('click', unlockAudio, { once: true });
-
-    // --- Learning Mode ---
-    function renderLearning() {
-        currentItem = data[currentIndex];
-        document.getElementById('letter-display').innerText = currentItem.letter;
-        document.getElementById('emoji-display').innerText = currentItem.emoji;
-        document.getElementById('word-display').innerText = currentItem.word;
-        document.getElementById('en-display').innerText = currentItem.en;
-        if (audioUnlocked) playOnlineAudio(currentItem.word); 
-    }
-
-    function nextItem() {
-        currentIndex = (currentIndex + 1) % data.length;
-        renderLearning();
-    }
-
-    function prevItem() {
-        currentIndex = (currentIndex - 1 + data.length) % data.length;
-        renderLearning();
-    }
-
-    // --- Quiz Game Logic ---
-    function startQuiz() {
-        const correctItem = data[Math.floor(Math.random() * data.length)];
-        document.getElementById('quiz-emoji').innerText = correctItem.emoji;
-        
-        let options = [correctItem];
-        let availableWrong = data.filter(item => item.letter !== correctItem.letter);
-        
-        availableWrong.sort(() => 0.5 - Math.random());
-        options.push(availableWrong[0]);
-        options.push(availableWrong[1]);
-        
-        options.sort(() => 0.5 - Math.random());
-
-        const optsContainer = document.getElementById('quiz-options');
-        optsContainer.innerHTML = '';
-        
-        options.forEach(opt => {
-            let btn = document.createElement('button');
-            btn.className = 'opt-btn';
-            btn.innerText = opt.letter;
-            btn.dataset.word = opt.word; // Save the word so we can speak it if correct
-            btn.onclick = () => checkAnswer(opt.letter, correctItem.letter, btn);
-            optsContainer.appendChild(btn);
-        });
-    }
-
-    function checkAnswer(selected, correct, btn) {
-        let allBtns = document.querySelectorAll('.opt-btn');
-        allBtns.forEach(b => b.style.pointerEvents = 'none');
-
-        if(selected === correct) {
-            btn.classList.add('correct-opt');
-            score++;
-            document.getElementById('score').innerText = score;
-            
-            // Speak the correct word
-            playOnlineAudio(btn.dataset.word);
-
-            setTimeout(() => {
-                allBtns.forEach(b => b.style.pointerEvents = 'auto');
-                startQuiz();
-            }, 2000);
-        } else {
-            btn.classList.add('wrong-opt');
-            
-            // Highlight the correct one in green
-            allBtns.forEach(b => {
-                if(b.innerText === correct) b.classList.add('correct-opt');
+        // --- Render Category Buttons ---
+        function renderCategories() {
+            catGrid.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'cat-btn' + (cat.id === selectedCategory ? ' active' : '');
+                btn.innerHTML = `<span>${cat.icon}</span> ${cat.name}`;
+                btn.onclick = () => {
+                    selectedCategory = cat.id;
+                    renderCategories();
+                };
+                catGrid.appendChild(btn);
             });
-            
-            setTimeout(() => {
-                allBtns.forEach(b => b.style.pointerEvents = 'auto');
-                startQuiz();
-            }, 2500);
         }
-    }
 
-    function toggleMode() {
-        isQuizMode = !isQuizMode;
-        document.getElementById('learning-mode').style.display = isQuizMode ? 'none' : 'block';
-        document.getElementById('quiz-section').style.display = isQuizMode ? 'block' : 'none';
-        document.getElementById('mode-toggle').innerText = isQuizMode ? 'পড়ি (Learn)' : 'ই খেলা খেলি (Play Quiz)';
-        if(isQuizMode) {
-            score = 0;
-            document.getElementById('score').innerText = score;
-            startQuiz();
-        } else {
-            renderLearning();
+        // --- UI Update ---
+        function updateUI() {
+            // Set Month
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const now = new Date();
+            currentMonth.innerText = monthNames[now.getMonth()] + " " + now.getFullYear();
+
+            // Filter by current vehicle and current month
+            const filtered = expenses.filter(exp => 
+                exp.vehicle === currentVehicle && 
+                new Date(exp.date).getMonth() === now.getMonth() && 
+                new Date(exp.date).getFullYear() === now.getFullYear()
+            );
+
+            // Calculate Totals
+            let total = 0, fuel = 0, maint = 0;
+            filtered.forEach(exp => {
+                total += exp.amount;
+                if(exp.category === 'petrol' || exp.category === 'diesel') fuel += exp.amount;
+                if(exp.category === 'service' || exp.category === 'insurance') maint += exp.amount;
+            });
+
+            totalAmount.innerText = formatINR(total);
+            totalSub.innerText = filtered.length > 0 ? `${filtered.length} transactions this month` : 'No expenses added yet';
+            statFuel.innerText = formatINR(fuel);
+            statMaint.innerText = formatINR(maint);
+
+            // Render List
+            if(filtered.length === 0) {
+                expenseList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">🧾</div>
+                        <p>No expenses added yet.<br>Click the + button to add one!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by date descending
+            filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            expenseList.innerHTML = '';
+            filtered.forEach(exp => {
+                const cat = categories.find(c => c.id === exp.category);
+                const item = document.createElement('div');
+                item.className = 'expense-item';
+                item.innerHTML = `
+                    <div class="exp-info">
+                        <div class="exp-icon">${cat.icon}</div>
+                        <div class="exp-details">
+                            <h4>${cat.name}</h4>
+                            <p>${exp.note || new Date(exp.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+                        </div>
+                    </div>
+                    <div class="exp-right">
+                        <div class="exp-amount">${formatINR(exp.amount)}</div>
+                        <button class="delete-btn" onclick="deleteExpense(${exp.id})">Delete</button>
+                    </div>
+                `;
+                expenseList.appendChild(item);
+            });
         }
-    }
 
-    // Start app
-    renderLearning();
-</script>
+        // Format to Indian Rupees
+        function formatINR(amount) {
+            return '₹' + amount.toLocaleString('en-IN');
+        }
+
+        // --- Actions ---
+        window.openModal = function() {
+            modalOverlay.classList.add('show');
+        }
+
+        window.closeModal = function() {
+            modalOverlay.classList.remove('show');
+            document.getElementById('exp-amount').value = '';
+            document.getElementById('exp-note').value = '';
+            document.getElementById('exp-date').valueAsDate = new Date();
+            selectedCategory = 'petrol';
+            renderCategories();
+        }
+
+        window.saveExpense = function() {
+            const amount = parseInt(document.getElementById('exp-amount').value);
+            const date = document.getElementById('exp-date').value;
+            const note = document.getElementById('exp-note').value;
+
+            if(!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            if(!date) {
+                alert('Please select a date');
+                return;
+            }
+
+            expenses.push({
+                id: Date.now(),
+                vehicle: currentVehicle,
+                category: selectedCategory,
+                amount: amount,
+                date: date,
+                note: note
+            });
+
+            setStorageItem('vehicleExpenses', JSON.stringify(expenses));
+            updateUI();
+            closeModal();
+        }
+
+        window.deleteExpense = function(id) {
+            expenses = expenses.filter(exp => exp.id !== id);
+            setStorageItem('vehicleExpenses', JSON.stringify(expenses));
+            updateUI();
+        }
+
+        window.clearAll = function() {
+            if(confirm('Are you sure you want to delete ALL expenses for ALL vehicles?')) {
+                expenses = [];
+                setStorageItem('vehicleExpenses', JSON.stringify(expenses));
+                updateUI();
+            }
+        }
+
+        // Vehicle change
+        vehicleSelect.addEventListener('change', (e) => {
+            currentVehicle = e.target.value;
+            setStorageItem('currentVehicle', currentVehicle);
+            updateUI();
+        });
+    </script>
 </body>
 </html>

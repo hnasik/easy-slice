@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EasySlice - Admin</title>
+<style>
+  /* ══════════════════════════════════════════════════════════
+     EasySlice Admin · Modern Dark UI Theme ("Midnight Indigo")
+     ══════════════════════════════════════════════════════════ */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  :root{
+    --bg:#0b0f1a; --card:#121828; --text:#e6e9f2; --muted:#8a93ab;
+    --border:#232b42; --brand:#6366f1; --brand-d:#4f46e5;
+    --brand-soft:rgba(99,102,241,.14);
+    --green:#34d399; --green-bg:rgba(16,185,129,.13);
+    --red:#fb7185; --red-bg:rgba(244,63,94,.13);
+    --amber:#fbbf24; --amber-bg:rgba(245,158,11,.13);
+    --radius:16px;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -16px rgba(0,0,0,.6);
+    --shadow-lg:0 30px 80px -24px rgba(0,0,0,.75);
+    --grad:linear-gradient(135deg,#818cf8 0%,#6366f1 45%,#8b5cf6 100%);
+    --ring:0 0 0 4px rgba(99,102,241,.28);
+    --surface:#0e1424;
+  }
+  *{box-sizing:border-box}
+  ::selection{background:rgba(99,102,241,.4);color:#fff}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#2a3350;border-radius:8px;border:2.5px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#3d4a75;background-clip:content-box}
+  body{
+    margin:0;color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1100px 520px at 88% -8%, rgba(99,102,241,.16), transparent 60%),
+      radial-gradient(900px 520px at -12% 108%, rgba(139,92,246,.13), transparent 60%),
+      var(--bg);
+    background-attachment:fixed;
+    min-height:100vh;
+  }
+  .hidden{display:none !important}
+  .muted{color:var(--muted)}
+  .green{color:var(--green)} .red{color:var(--red)}
+  .center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+  /* ── Buttons ── */
+  .btn{
+    border:1px solid var(--border);background:#1a2136;color:var(--text);
+    padding:10px 18px;border-radius:12px;font-size:14px;font-weight:600;
+    cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);font-family:inherit;
+    box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .btn:hover{background:#222b47;transform:translateY(-1px);box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+  .btn:active{transform:translateY(0) scale(.98)}
+  .btn:focus-visible{outline:none;box-shadow:var(--ring)}
+  .btn.primary{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 8px 20px -8px rgba(99,102,241,.7)}
+  .btn.primary:hover{filter:brightness(1.1);box-shadow:0 12px 28px -8px rgba(99,102,241,.8)}
+  .btn.ghost{background:transparent;box-shadow:none;border-color:transparent}
+  .btn.ghost:hover{background:rgba(255,255,255,.07);box-shadow:none}
+  .btn.full{width:100%}
+  .btn.sm{padding:7px 13px;font-size:13px;border-radius:10px}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* ── Form Fields ── */
+  .field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+  .field label{font-size:12.5px;font-weight:700;color:#aeb6cd;letter-spacing:.2px}
+  .field input,.field select, .field textarea{
+    padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;
+    font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;
+    transition:all .18s ease;width:100%;resize:vertical;
+  }
+  .field input:hover,.field select:hover, .field textarea:hover{border-color:#313c60}
+  .field input:focus,.field select:focus, .field textarea:focus{
+    border-color:var(--brand);background:#10182b;box-shadow:var(--ring);
+  }
+  .field input::placeholder, .field textarea::placeholder{color:#5b6580}
+
+  /* Settings Grid */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .error{
+    background:var(--red-bg);color:var(--red);padding:11px 14px;border-radius:12px;
+    font-size:13px;font-weight:600;margin:12px 0 0;border:1px solid rgba(251,113,133,.25);
+  }
+
+  /* ── Auth / Login ── */
+  .auth-card{
+    width:100%;max-width:410px;background:rgba(18,24,40,.82);
+    backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+    border-radius:26px;padding:38px 32px;box-shadow:var(--shadow-lg);
+    border:1px solid rgba(255,255,255,.09);
+  }
+  .brand{text-align:center;margin-bottom:26px}
+  .brand h1{margin:14px 0 5px;font-size:24px;letter-spacing:-.5px;font-weight:800;color:#f4f6fc}
+  .brand p{margin:0;font-size:13px}
+  .logo{
+    width:54px;height:54px;border-radius:17px;margin:0 auto;
+    background:var(--grad);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:24px;font-weight:800;
+    box-shadow:0 12px 28px -8px rgba(99,102,241,.65), inset 0 1.5px 0 rgba(255,255,255,.35);
+  }
+  .logo.sm{width:34px;height:34px;border-radius:11px;font-size:15px;margin:0;box-shadow:0 6px 14px -6px rgba(99,102,241,.6)}
+
+  /* ── App Shell ── */
+  .topbar{
+    background:rgba(11,15,26,.72);
+    backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    padding:12px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:50;
+  }
+  .brand-sm{display:flex;align-items:center;gap:11px;font-weight:800;font-size:15px;letter-spacing:-.2px}
+  .user-menu{display:flex;align-items:center;gap:12px;font-size:13px}
+  .user-menu span{
+    padding:6px 13px;border-radius:999px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.09);font-weight:600;font-size:12.5px;color:var(--muted);
+    max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+
+  /* ── Navigation Tabs (pills) ── */
+  .nav-tabs{
+    display:flex;background:rgba(11,15,26,.6);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    padding:10px 24px;gap:8px;overflow-x:auto;
+  }
+  .nav-tab{
+    padding:9px 20px;border:none;background:transparent;font-size:14px;
+    font-weight:600;color:var(--muted);cursor:pointer;border-radius:999px;
+    white-space:nowrap;transition:all .18s ease;font-family:inherit;
+  }
+  .nav-tab:hover{color:var(--text);background:rgba(255,255,255,.07)}
+  .nav-tab.active{
+    color:#fff;background:var(--grad);
+    box-shadow:0 6px 16px -6px rgba(99,102,241,.7);
+  }
+
+  main{max-width:1080px;margin:0 auto;padding:26px 20px 64px}
+  .view h2{font-size:22px;margin:0 0 18px;letter-spacing:-.5px;font-weight:800;color:#f4f6fc}
+
+  /* ── Stat Cards ── */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+  .stat{
+    background:linear-gradient(180deg,#141b2e,#111726);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px;display:flex;flex-direction:column;gap:6px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden;
+    transition:all .2s cubic-bezier(.4,0,.2,1);
+  }
+  .stat::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--grad);opacity:0;transition:opacity .2s ease;
+  }
+  .stat:hover{transform:translateY(-3px);border-color:#313c60;box-shadow:0 20px 40px -16px rgba(0,0,0,.7)}
+  .stat:hover::before{opacity:1}
+  .stat-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+  .stat-value{font-size:23px;font-weight:800;letter-spacing:-.5px}
+
+  /* ── Cards ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow);
+  }
+  .card-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 18px;border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,#151c30,#121828);
+  }
+  .card-head h3{margin:0;font-size:15.5px;font-weight:700;letter-spacing:-.2px;color:#f1f4fb}
+
+  /* ── Table ── */
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;text-align:left}
+  th{
+    padding:12px 16px;background:var(--surface);font-size:11px;font-weight:700;
+    color:#7d87a3;text-transform:uppercase;letter-spacing:.7px;
+    border-bottom:1px solid var(--border);white-space:nowrap;
+  }
+  td{padding:14px 16px;border-bottom:1px solid #1c2438;font-size:14px;vertical-align:middle;color:#d6dbe9}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#172038}
+  td strong{letter-spacing:-.2px;color:#f1f4fb}
+
+  /* ── Badges ── */
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;padding:5px 11px;
+    border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.4px;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8;flex-shrink:0}
+  .badge.active{background:var(--green-bg);color:var(--green);border-color:rgba(52,211,153,.3)}
+  .badge.inactive{background:var(--red-bg);color:var(--red);border-color:rgba(251,113,133,.3)}
+  .badge.pending{background:var(--amber-bg);color:var(--amber);border-color:rgba(251,191,36,.3)}
+
+  /* ── Month Picker & Search ── */
+  .month-picker{
+    padding:9px 13px;border:1.5px solid var(--border);border-radius:11px;
+    font-family:inherit;font-size:14px;font-weight:600;color:#a5b4fc;
+    outline:none;background:var(--surface);transition:all .18s ease;cursor:pointer;
+    color-scheme:dark;
+  }
+  .month-picker:hover{border-color:#313c60}
+  .month-picker:focus{border-color:var(--brand);box-shadow:var(--ring)}
+  .search-input{
+    padding:10px 14px;border:1.5px solid var(--border);border-radius:11px;
+    font-family:inherit;font-size:14px;outline:none;width:260px;background:var(--surface);
+    transition:all .18s ease;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .search-input:hover{border-color:#313c60}
+  .search-input:focus{border-color:var(--brand);box-shadow:var(--ring)}
+  .search-input::placeholder{color:#5b6580}
+
+  /* ── Seller Details ── */
+  .back-btn{margin-bottom:18px;color:var(--muted)}
+  .back-btn:hover{color:var(--text);background:#1a2136;box-shadow:var(--shadow)}
+  .seller-profile{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;margin-bottom:20px;box-shadow:var(--shadow);
+  }
+  .sp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:14px;flex-wrap:wrap}
+  .sp-name{font-size:24px;font-weight:800;margin:0 0 5px;letter-spacing:-.6px;color:#f4f6fc}
+  .sp-shop{font-size:14px;color:var(--muted);margin:0}
+  .sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px}
+  .sp-item{
+    background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 15px;
+  }
+  .sp-item span{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:4px;letter-spacing:.6px}
+  .sp-item strong{color:#eef1f9;word-break:break-word}
+
+  /* ── Action Buttons in Tables ── */
+  .action-btns { display:flex; gap:6px; align-items:center; }
+  .btn-icon {
+    padding: 6px 9px; border-radius: 8px; font-size: 14px; line-height: 1;
+    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid transparent; background: transparent; color: var(--text);
+  }
+  .btn-icon.edit {
+    background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3); color: #a5b4fc;
+  }
+  .btn-icon.edit:hover { background: rgba(99,102,241,0.3); color: #fff; transform: scale(1.05); }
+  .btn-icon.delete {
+    background: rgba(251,113,133,0.13); border-color: rgba(251,113,133,0.3); color: var(--red);
+  }
+  .btn-icon.delete:hover { background: rgba(251,113,133,0.3); color: #fff; transform: scale(1.05); }
+
+  /* ── Modal ── */
+  .modal{
+    position:fixed;inset:0;background:rgba(3,6,15,.68);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .22s ease;
+  }
+  .modal-box{
+    background:#141a2c;width:100%;max-width:520px;border-radius:24px;padding:26px;
+    max-height:90vh;overflow:auto;
+    border:1px solid rgba(255,255,255,.09);
+    box-shadow:0 40px 90px -24px rgba(0,0,0,.85);
+    animation:popIn .3s cubic-bezier(.16,1,.3,1);
+  }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+  .modal-head h3{margin:0;font-size:19px;font-weight:800;letter-spacing:-.4px;color:#f4f6fc}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;transform:scale(.93) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+  /* ── Installment Grid ── */
+  .inst-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .inst-btn{
+    padding:13px 10px;border:1.5px dashed #34406388;background:var(--surface);
+    border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    transition:all .2s cubic-bezier(.4,0,.2,1);color:var(--text);font-family:inherit;
+  }
+  .inst-btn:hover{
+    border-color:var(--brand);background:var(--brand-soft);color:#c7d2fe;
+    transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(99,102,241,.5);
+  }
+  .inst-btn:active{transform:translateY(0) scale(.97)}
+  .inst-btn.paid{
+    border:1.5px solid rgba(52,211,153,.45);background:var(--green-bg);color:var(--green);
+  }
+  .inst-btn.paid:hover{border-color:var(--green);background:rgba(16,185,129,.2);color:#6ee7b7;box-shadow:0 8px 18px -8px rgba(16,185,129,.5)}
+  .inst-btn span.amt{font-size:12px;color:var(--muted);font-weight:600}
+  .inst-btn.paid span.amt{color:var(--green);opacity:.85}
+
+  /* ── Toast ── */
+  #toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(18px);
+    background:var(--grad);color:#fff;padding:12px 22px;border-radius:999px;
+    font-size:13.5px;font-weight:600;
+    box-shadow:0 18px 44px -12px rgba(99,102,241,.6), 0 0 0 1px rgba(255,255,255,.15) inset;
+    opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:200;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ── Loading pulse ── */
+  #loading .logo{animation:logoPulse 1.4s ease-in-out infinite}
+  @keyframes logoPulse{0%,100%{transform:scale(1);box-shadow:0 12px 28px -8px rgba(99,102,241,.65)}50%{transform:scale(1.1);box-shadow:0 18px 36px -8px rgba(99,102,241,.85)}}
+
+  /* ── Responsive ── */
+  @media(max-width:640px){
+    .stats{grid-template-columns:1fr}
+    .sp-grid{grid-template-columns:1fr}
+    .settings-grid{grid-template-columns:1fr}
+    .inst-grid{grid-template-columns:repeat(2, 1fr)}
+    .search-input{width:100%}
+    .header-flex{flex-direction:column;align-items:flex-start !important;gap:12px}
+    .topbar{padding:12px 16px}
+    .nav-tabs{padding:8px 12px}
+    .user-menu span{max-width:120px}
+    main{padding:20px 14px 56px}
+    .action-btns { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading" class="center-screen">
+  <div class="logo">A</div>
+</div>
+
+<!-- LOGIN -->
+<div id="authView" class="center-screen hidden">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="logo">A</div>
+      <h1>Admin Panel</h1>
+      <p class="muted">EasySlice Management</p>
+    </div>
+    <form id="authForm" novalidate>
+      <div class="field">
+        <label>Admin Email</label>
+        <input id="emailInput" type="email" required />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="passwordInput" type="password" required />
+      </div>
+      <button class="btn primary full" type="submit" id="loginBtn">Login</button>
+      <p id="authError" class="error hidden"></p>
+    </form>
+  </div>
+</div>
+
+<!-- APP DASHBOARD -->
+<div id="appView" class="hidden">
+  <header class="topbar">
+    <div class="brand-sm"><div class="logo sm">A</div><span>Admin Dashboard</span></div>
+    <div class="user-menu">
+      <span id="adminName" class="muted"></span>
+      <button class="btn ghost sm" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" id="navSellers">Sellers</button>
+    <button class="nav-tab" id="navCustomers">Customers</button>
+    <button class="nav-tab" id="navPayments">Payments</button>
+    <button class="nav-tab" id="navSettings">Business Settings</button>
+  </nav>
+
+  <main>
+    <!-- SELLERS LIST VIEW -->
+    <section id="listView" class="view">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px" class="header-flex">
+        <h2>Sellers</h2>
+        <div>
+          <label style="font-size:12px;font-weight:600;margin-right:8px">Filter Month:</label>
+          <input type="month" id="globalMonthPicker" class="month-picker" />
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Total Sellers</span>
+          <span class="stat-value" id="statTotalSellers">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Sales in Selected Month</span>
+          <span class="stat-value" id="statMonthSales">0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Seller / Shop</th>
+                <th>Active Since</th>
+                <th>Status</th>
+                <th>Sales (Selected Month)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="sellerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SELLER DETAILS VIEW -->
+    <section id="detailsView" class="view hidden">
+      <button class="btn ghost sm back-btn" id="backBtn">← Back to Sellers</button>
+
+      <div class="seller-profile">
+        <div class="sp-header">
+          <div>
+            <h2 class="sp-name" id="dName">Seller Name</h2>
+            <p class="sp-shop" id="dShop">Shop Name</p>
+          </div>
+          <div style="text-align:right">
+            <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Select Month</label>
+            <input type="month" id="detailMonthPicker" class="month-picker" />
+          </div>
+        </div>
+
+        <div class="sp-grid">
+          <div class="sp-item"><span>Active Since</span><strong id="dSince">—</strong></div>
+          <div class="sp-item"><span>Status</span><strong id="dStatus">—</strong></div>
+          <div class="sp-item"><span>Email</span><strong id="dEmail">—</strong></div>
+          <div class="sp-item"><span>Phone</span><strong id="dPhone">—</strong></div>
+          <div class="sp-item" style="grid-column: 1 / -1;"><span>Address</span><strong id="dAddress">—</strong></div>
+        </div>
+      </div>
+
+      <div class="stats" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="stat">
+          <span class="stat-label">Total Sold</span>
+          <span class="stat-value" id="dTotalSales">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Advance Collected</span>
+          <span class="stat-value green" id="dTotalAdvance">₹0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Rest Pending</span>
+          <span class="stat-value red" id="dTotalRest">₹0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Sales History</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Phone Model</th>
+                <th>Advance</th>
+                <th>Rest</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS VIEW -->
+    <section id="customersView" class="view hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px" class="header-flex">
+        <h2>Customers & Payments</h2>
+        <input id="customerSearchInput" type="search" class="search-input" placeholder="Search by Customer ID or Name..." />
+      </div>
+      
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Seller</th>
+                <th>Phone Model</th>
+                <th>Rest Amount</th>
+                <th>Tenure</th>
+                <th>Payment Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAYMENTS VIEW -->
+    <section id="paymentsView" class="view hidden">
+      <h2>Seller Subscription Payments</h2>
+      <p class="muted" style="margin-bottom:20px; font-size:14px;">Manage monthly payments for each seller. You can mark a month as Paid or Due.</p>
+      
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Seller Name</th>
+                <th>Shop / Email</th>
+                <th>Current Month Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="paymentTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUSINESS SETTINGS VIEW -->
+    <section id="settingsView" class="view hidden">
+      <h2>Business Settings (Invoice Fixed Data)</h2>
+      
+      <div class="card">
+        <div class="card-head"><h3>Fixed Details for Invoices</h3></div>
+        <div style="padding: 20px;">
+          <form id="settingsForm">
+            <div class="settings-grid">
+              <!-- Business Info -->
+              <div class="field">
+                <label>Business Name</label>
+                <input id="setBizName" required placeholder="e.g. EasySlice Mobile Store" />
+              </div>
+              <div class="field">
+                <label>Logo URL (Image Link)</label>
+                <input id="setLogo" placeholder="https://example.com/logo.png" />
+              </div>
+              
+              <div class="field full-width">
+                <label>Business Address</label>
+                <textarea id="setAddress" rows="2" required placeholder="Full shop address"></textarea>
+              </div>
+
+              <!-- Tax Info -->
+              <div class="field">
+                <label>GST Number</label>
+                <input id="setGstNo" required placeholder="e.g. 22AAAAA0000A1Z5" />
+              </div>
+              <div class="field">
+                <label>GST Rate (%)</label>
+                <input id="setGstRate" type="number" step="0.01" placeholder="e.g. 18" />
+              </div>
+              <div class="field">
+                <label>HSN / SAC Code</label>
+                <input id="setHsn" placeholder="e.g. 85171300" />
+              </div>
+
+              <!-- Payment Details -->
+              <div class="field full-width" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <label style="font-size: 15px; color: var(--brand);">Payment Details (For Invoice Footer)</label>
+              </div>
+              
+              <div class="field">
+                <label>Bank Account Number</label>
+                <input id="setAccNo" placeholder="e.g. 1234567890" />
+              </div>
+              <div class="field">
+                <label>IFSC Code</label>
+                <input id="setIfsc" placeholder="e.g. SBIN0001234" />
+              </div>
+
+              <!-- Support Info -->
+              <div class="field full-width" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <label style="font-size: 15px; color: var(--brand);">Support Contact</label>
+              </div>
+
+              <div class="field">
+                <label>Customer Care No.</label>
+                <input id="setCareNo" placeholder="e.g. 1800-123-4567" />
+              </div>
+              <div class="field">
+                <label>Email Address</label>
+                <input id="setEmail" type="email" placeholder="e.g. support@easyslice.com" />
+              </div>
+
+            </div>
+
+            <button type="submit" class="btn primary" style="margin-top: 10px;">Save Settings</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- PAYMENT HISTORY MODAL (Customers) -->
+<div class="modal hidden" id="paymentModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="mCustomerName">Customer Name</h3>
+        <p class="muted" style="margin:4px 0 0;font-size:13px" id="mCustomerDetails">Model · Tenure</p>
+      </div>
+      <button class="btn ghost sm" onclick="document.getElementById('paymentModal').classList.add('hidden')">✕</button>
+    </div>
+    
+    <div class="stats" style="grid-template-columns:1fr 1fr; margin-bottom:20px">
+      <div class="stat" style="padding:12px">
+        <span class="stat-label">Rest Principal</span>
+        <span class="stat-value red" id="mRestAmount">₹0</span>
+      </div>
+      <div class="stat" style="padding:12px">
+        <span class="stat-label">Installment Amount</span>
+        <span class="stat-value" id="mEmiAmount">₹0</span>
+      </div>
+    </div>
+
+    <p style="font-size:13px;font-weight:600;margin-bottom:8px">Click to mark installment as Paid / Unpaid:</p>
+    <div class="inst-grid" id="installmentGrid">
+      <!-- JS will populate the buttons here -->
+    </div>
+  </div>
+</div>
+
+<!-- SELLER PAYMENT MODAL (With Month Picker) -->
+<div class="modal hidden" id="sellerPaymentModal">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-head">
+      <div>
+        <h3 id="spmSellerName">Seller Name</h3>
+        <p class="muted" style="margin:4px 0 0;font-size:13px" id="spmSellerEmail">Email</p>
+      </div>
+      <button class="btn ghost sm" onclick="document.getElementById('sellerPaymentModal').classList.add('hidden')">✕</button>
+    </div>
+
+    <div style="margin-bottom:24px">
+      <label style="font-size:14px; font-weight:700; color:var(--text); display:block; margin-bottom:10px;">Select Month to Manage:</label>
+      <input type="month" id="adminMonthPicker" class="month-picker" style="width:100%; margin-bottom:16px; font-size:16px; padding:12px;" />
+      
+      <div id="selectedMonthStatusCard" style="background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border); text-align:center;">
+        <h4 style="margin:0 0 8px; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Status for <span id="dispSelectedMonth" style="color:var(--text)">—</span></h4>
+        <div id="dispPaymentStatus" style="font-size:28px; font-weight:800; margin-bottom:18px;">—</div>
+        <button id="toggleMonthStatusBtn" class="btn primary" style="width:100%; padding:12px; font-size:15px;">Toggle Status</button>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border); padding-top:16px;">
+      <h4 style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:12px;">Payment History Log</h4>
+      <div id="sellerPaymentHistoryList" style="max-height:180px; overflow-y:auto; padding-right:8px;">
+        <!-- History will be populated here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE SALE CONFIRMATION MODAL -->
+<div class="modal hidden" id="deleteConfirmModal">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-head">
+      <h3>Delete Sale?</h3>
+      <button class="btn ghost sm" onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')">✕</button>
+    </div>
+    <p class="muted" style="font-size:14px;line-height:1.55;margin:0 0 20px">
+      Are you sure you want to delete the sale for <b id="delCustomerName" style="color:#eef1f9"></b>? This action cannot be undone.
+    </p>
+    <div style="display:flex;gap:10px">
+      <button class="btn full" onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')">Cancel</button>
+      <button class="btn full" id="confirmDeleteBtn" style="background:var(--grad);border:none;color:#fff;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT SALE MODAL -->
+<div class="modal hidden" id="editSaleModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Edit Sale</h3>
+      <button class="btn ghost sm" onclick="document.getElementById('editSaleModal').classList.add('hidden')">✕</button>
+    </div>
+    <form id="editSaleForm">
+      <input type="hidden" id="editSaleId" />
+      <div class="field">
+        <label>Customer Name</label>
+        <input id="editCustomerName" required />
+      </div>
+      <div class="field">
+        <label>Customer Phone</label>
+        <input id="editCustomerPhone" />
+      </div>
+      <div class="field">
+        <label>Phone Model</label>
+        <input id="editPhoneModel" required />
+      </div>
+      <div class="settings-grid">
+        <div class="field">
+          <label>Advance (₹)</label>
+          <input id="editAdvance" type="number" step="0.01" min="0" />
+        </div>
+        <div class="field">
+          <label>Rest (₹)</label>
+          <input id="editRest" type="number" step="0.01" min="0" />
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="field">
+          <label>Tenure (Months)</label>
+          <input id="editTenure" type="number" min="0" />
+        </div>
+        <div class="field">
+          <label>Installment Amount (₹)</label>
+          <input id="editInstallment" type="number" step="0.01" min="0" />
+        </div>
+      </div>
+      <button type="submit" class="btn primary full">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- NEW: EDIT SELLER MODAL -->
+<div class="modal hidden" id="editSellerModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Edit Seller Profile</h3>
+      <button class="btn ghost sm" onclick="document.getElementById('editSellerModal').classList.add('hidden')">✕</button>
+    </div>
+    <form id="editSellerForm">
+      <input type="hidden" id="editSellerId" />
+      <div class="field">
+        <label>Seller Name</label>
+        <input id="editSellerName" required />
+      </div>
+      <div class="field">
+        <label>Shop / Full Name</label>
+        <input id="editSellerShop" />
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input id="editSellerEmail" type="email" required />
+      </div>
+      <div class="field">
+        <label>Phone Number</label>
+        <input id="editSellerPhone" />
+      </div>
+      <div class="field">
+        <label>Address</label>
+        <input id="editSellerAddress" />
+      </div>
+      <button type="submit" class="btn primary full">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- NEW: DELETE SELLER CONFIRMATION MODAL -->
+<div class="modal hidden" id="deleteSellerModal">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-head">
+      <h3>Delete Seller?</h3>
+      <button class="btn ghost sm" onclick="document.getElementById('deleteSellerModal').classList.add('hidden')">✕</button>
+    </div>
+    <p class="muted" style="font-size:14px;line-height:1.55;margin:0 0 20px">
+      Are you sure you want to delete the seller profile for <b id="delSellerName" style="color:#eef1f9"></b>? 
+      <br><br>
+      <span style="color:var(--red);font-weight:600;">Note:</span> Their sales records will remain in the database, but they will not be able to log in.
+    </p>
+    <div style="display:flex;gap:10px">
+      <button class="btn full" onclick="document.getElementById('deleteSellerModal').classList.add('hidden')">Cancel</button>
+      <button class="btn full" id="confirmDeleteSellerBtn" style="background:var(--red-bg);border:1px solid rgba(251,113,133,.3);color:var(--red);">Delete Profile</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, deleteDoc, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA9IsIB-QgFSDxxBrMBXn0T1NowZNrY8UY",
+  authDomain: "golden-khata.firebaseapp.com",
+  projectId: "golden-khata",
+  storageBucket: "golden-khata.firebasestorage.app",
+  messagingSenderId: "504224659075",
+  appId: "1:504224659075:web:613123d6cea30546550db6",
+  measurementId: "G-QV9V0WPWR5"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const show = el => el.classList.remove('hidden');
+const hide = el => el.classList.add('hidden');
+const money = n => '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
+function toDate(ts) {
+  if (!ts) return null;
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return isNaN(d) ? null : d;
+}
+function fmtDate(ts) {
+  const d = toDate(ts);
+  if (!d) return '—';
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function getMonthKey(date) {
+  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+}
+function getMonthLabel(key) {
+  if(!key) return '—';
+  const [y, m] = key.split('-');
+  return new Date(Number(y), Number(m) - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+let currentUser = null;
+let allSellers = [];
+let allSales = [];
+let allPayments = [];
+let activeSellerId = null;
+let activeSaleId = null;
+let activePaymentSellerId = null;
+let saleToDelete = null;
+let sellerToDelete = null;
+let unsubUsers = null;
+let unsubSales = null;
+let unsubPayments = null;
+
+// Default Month
+const thisMonth = getMonthKey(new Date());
+$('#globalMonthPicker').value = thisMonth;
+
+/* ─────────────── AUTH ─────────────── */
+$('#authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('#loginBtn');
+  btn.disabled = true;
+  hide($('#authError'));
+
+  try {
+    await signInWithEmailAndPassword(auth, $('#emailInput').value, $('#passwordInput').value);
+  } catch (err) {
+    $('#authError').textContent = 'Invalid email or password.';
+    show($('#authError'));
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+$('#logoutBtn').addEventListener('click', () => signOut(auth));
+
+onAuthStateChanged(auth, async user => {
+  hide($('#loading'));
+  
+  if (!user) {
+    currentUser = null;
+    teardown();
+    hide($('#appView'));
+    show($('#authView'));
+    return;
+  }
+
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists() || snap.data().role !== 'admin') {
+      await signOut(auth);
+      $('#authError').textContent = 'Access Denied: You are not an admin.';
+      show($('#authError'));
+      return;
+    }
+    
+    currentUser = user;
+    $('#adminName').textContent = user.email;
+    hide($('#authView'));
+    show($('#appView'));
+    subscribeData();
+  } catch (err) {
+    console.error(err);
+    await signOut(auth);
+  }
+});
+
+function teardown() {
+  unsubUsers?.();
+  unsubSales?.();
+  unsubPayments?.();
+  allSellers = [];
+  allSales = [];
+  allPayments = [];
+}
+
+/* ─────────────── DATA FETCHING ─────────────── */
+function subscribeData() {
+  teardown();
+
+  unsubUsers = onSnapshot(collection(db, 'users'), snap => {
+    allSellers = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(u => u.role !== 'admin');
+    
+    renderSellerTable();
+    renderCustomerTable();
+    renderPaymentTable();
+    if (activeSellerId) renderDetailsView();
+    if (activeSaleId) openPaymentModal(activeSaleId);
+    if (activePaymentSellerId) openSellerPaymentModal(activePaymentSellerId); 
+  });
+
+  unsubSales = onSnapshot(collection(db, 'sales'), snap => {
+    allSales = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    renderSellerTable();
+    renderCustomerTable();
+    if (activeSellerId) renderDetailsView();
+    if (activeSaleId) openPaymentModal(activeSaleId);
+  });
+
+  unsubPayments = onSnapshot(collection(db, 'seller_payments'), snap => {
+    allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPaymentTable();
+    if (activePaymentSellerId) {
+      updatePaymentModalView();
+      renderPaymentHistory(activePaymentSellerId);
+    }
+  });
+}
+
+/* ─────────────── NAVIGATION TABS ─────────────── */
+$('#navSellers').addEventListener('click', () => {
+  $$('.nav-tab').forEach(t => t.classList.remove('active'));
+  $('#navSellers').classList.add('active');
+  show($('#listView'));
+  hide($('#customersView'));
+  hide($('#detailsView'));
+  hide($('#settingsView'));
+  hide($('#paymentsView'));
+});
+
+$('#navCustomers').addEventListener('click', () => {
+  $$('.nav-tab').forEach(t => t.classList.remove('active'));
+  $('#navCustomers').classList.add('active');
+  show($('#customersView'));
+  hide($('#listView'));
+  hide($('#detailsView'));
+  hide($('#settingsView'));
+  hide($('#paymentsView'));
+});
+
+$('#navPayments').addEventListener('click', () => {
+  $$('.nav-tab').forEach(t => t.classList.remove('active'));
+  $('#navPayments').classList.add('active');
+  show($('#paymentsView'));
+  hide($('#listView'));
+  hide($('#customersView'));
+  hide($('#detailsView'));
+  hide($('#settingsView'));
+});
+
+$('#navSettings').addEventListener('click', () => {
+  $$('.nav-tab').forEach(t => t.classList.remove('active'));
+  $('#navSettings').classList.add('active');
+  show($('#settingsView'));
+  hide($('#listView'));
+  hide($('#customersView'));
+  hide($('#detailsView'));
+  hide($('#paymentsView'));
+  loadBusinessSettings();
+});
+
+/* ─────────────── SELLERS TAB LOGIC ─────────────── */
+$('#globalMonthPicker').addEventListener('change', renderSellerTable);
+
+function renderSellerTable() {
+  const monthKey = $('#globalMonthPicker').value;
+  const tbody = $('#sellerTableBody');
+  
+  if (!allSellers.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted)">No sellers found.</td></tr>`;
+    return;
+  }
+
+  $('#statTotalSellers').textContent = allSellers.length;
+  let totalMonthSalesCount = 0;
+
+  tbody.innerHTML = allSellers.map(seller => {
+    const sellerMonthSales = allSales.filter(s => {
+      if (s.ownerId !== seller.id) return false;
+      const d = toDate(s.saleDate) || toDate(s.createdAt);
+      return d && getMonthKey(d) === monthKey;
+    });
+
+    totalMonthSalesCount += sellerMonthSales.length;
+
+    const activeDate = toDate(seller.createdAt);
+    const activeStr = activeDate ? activeDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : '—';
+    const status = seller.status || 'active';
+
+    return `
+      <tr>
+        <td>
+          <div style="font-weight:600">${seller.sellerName || seller.name || 'Unnamed'}</div>
+          <div style="font-size:12px;color:var(--muted)">${seller.name || '—'}</div>
+        </td>
+        <td>${activeStr}</td>
+        <td><span class="badge ${status === 'active' ? 'active' : 'inactive'}">${status.toUpperCase()}</span></td>
+        <td><strong>${sellerMonthSales.length}</strong></td>
+        <td>
+          <div class="action-btns">
+            <button class="btn sm" onclick="window.openSeller('${seller.id}')">Details</button>
+            <button class="btn-icon edit" onclick="window.editSeller('${seller.id}')" title="Edit Seller">✏️</button>
+            <button class="btn-icon delete" onclick="window.confirmDeleteSeller('${seller.id}')" title="Delete Seller">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  $('#statMonthSales').textContent = totalMonthSalesCount;
+}
+
+window.openSeller = (id) => {
+  activeSellerId = id;
+  const seller = allSellers.find(s => s.id === id);
+  
+  $('#detailMonthPicker').value = $('#globalMonthPicker').value;
+
+  if (seller.createdAt) {
+    const activeDate = toDate(seller.createdAt);
+    if (activeDate) {
+      const minMonth = activeDate.getFullYear() + '-' + String(activeDate.getMonth() + 1).padStart(2, '0');
+      $('#detailMonthPicker').min = minMonth;
+    }
+  } else {
+    $('#detailMonthPicker').removeAttribute('min');
+  }
+
+  hide($('#listView'));
+  hide($('#customersView'));
+  hide($('#settingsView'));
+  hide($('#paymentsView'));
+  show($('#detailsView'));
+  renderDetailsView();
+};
+
+$('#backBtn').addEventListener('click', () => {
+  activeSellerId = null;
+  hide($('#detailsView'));
+  show($('#listView'));
+});
+
+$('#detailMonthPicker').addEventListener('change', renderDetailsView);
+
+function renderDetailsView() {
+  if (!activeSellerId) return;
+  const seller = allSellers.find(s => s.id === activeSellerId);
+  if (!seller) return;
+
+  const monthKey = $('#detailMonthPicker').value;
+
+  $('#dName').textContent = seller.sellerName || seller.name || 'Unnamed';
+  $('#dShop').textContent = seller.name || '—';
+  $('#dEmail').textContent = seller.email || '—';
+  
+  const activeDate = toDate(seller.createdAt);
+  $('#dSince').textContent = activeDate ? activeDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  $('#dStatus').innerHTML = `<span class="badge ${seller.status === 'active' ? 'active' : 'inactive'}">${(seller.status || 'active').toUpperCase()}</span>`;
+  
+  $('#dPhone').textContent = seller.sellerPhone || seller.phone || '—';
+  $('#dAddress').textContent = seller.sellerAddress || '—';
+
+  const sellerSales = allSales.filter(s => {
+    if (s.ownerId !== activeSellerId) return false;
+    const d = toDate(s.saleDate) || toDate(s.createdAt);
+    return d && getMonthKey(d) === monthKey;
+  }).sort((a, b) => {
+    const at = toDate(a.saleDate) || toDate(a.createdAt);
+    const bt = toDate(b.saleDate) || toDate(b.createdAt);
+    return bt - at;
+  });
+
+  const adv = sellerSales.reduce((sum, s) => sum + Number(s.advanceAmount || 0), 0);
+  const rest = sellerSales.reduce((sum, s) => sum + Number(s.restAmount || 0), 0);
+
+  $('#dTotalSales').textContent = sellerSales.length;
+  $('#dTotalAdvance').textContent = money(adv);
+  $('#dTotalRest').textContent = money(rest);
+
+  const tbody = $('#salesTableBody');
+  if (!sellerSales.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted)">No sales recorded for this month.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = sellerSales.map(s => {
+    const sDate = toDate(s.saleDate) || toDate(s.createdAt);
+    return `
+      <tr>
+        <td>${fmtDate(sDate)}</td>
+        <td>
+          <div style="font-weight:600">${s.customerName || 'Unnamed'}</div>
+          <div style="font-size:12px;color:var(--muted)">${s.customerPhone || '—'}</div>
+        </td>
+        <td>${s.phoneModel || '—'}</td>
+        <td class="green">${money(s.advanceAmount)}</td>
+        <td class="red">${money(s.restAmount)}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-icon edit" onclick="window.editSale('${s.id}')" title="Edit Sale">✏️</button>
+            <button class="btn-icon delete" onclick="window.confirmDeleteSale('${s.id}')" title="Delete Sale">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+/* ─────────────── NEW: SELLER EDIT & DELETE ─────────────── */
+window.editSeller = (id) => {
+  const seller = allSellers.find(s => s.id === id);
+  if (!seller) return;
+  $('#editSellerId').value = seller.id;
+  $('#editSellerName').value = seller.sellerName || '';
+  $('#editSellerShop').value = seller.name || '';
+  $('#editSellerEmail').value = seller.email || '';
+  $('#editSellerPhone').value = seller.sellerPhone || seller.phone || '';
+  $('#editSellerAddress').value = seller.sellerAddress || '';
+  show($('#editSellerModal'));
+};
+
+$('#editSellerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('#editSellerId').value;
+  try {
+    await updateDoc(doc(db, 'users', id), {
+      sellerName: $('#editSellerName').value.trim(),
+      name: $('#editSellerShop').value.trim(),
+      email: $('#editSellerEmail').value.trim(),
+      sellerPhone: $('#editSellerPhone').value.trim(),
+      sellerAddress: $('#editSellerAddress').value.trim(),
+      updatedAt: new Date()
+    });
+    toast('Seller profile updated successfully');
+    hide($('#editSellerModal'));
+  } catch (err) {
+    console.error(err);
+    toast('Failed to update seller profile');
+  }
+});
+
+window.confirmDeleteSeller = (id) => {
+  const seller = allSellers.find(s => s.id === id);
+  if (!seller) return;
+  sellerToDelete = id;
+  $('#delSellerName').textContent = seller.sellerName || seller.name || 'this seller';
+  show($('#deleteSellerModal'));
+};
+
+$('#confirmDeleteSellerBtn').addEventListener('click', async () => {
+  if (!sellerToDelete) return;
+  try {
+    await deleteDoc(doc(db, 'users', sellerToDelete));
+    toast('Seller profile deleted successfully');
+    hide($('#deleteSellerModal'));
+    sellerToDelete = null;
+    if (activeSellerId === sellerToDelete) {
+      activeSellerId = null;
+      hide($('#detailsView'));
+      show($('#listView'));
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Failed to delete seller profile');
+  }
+});
+
+/* ─────────────── NEW: PAYMENTS TAB LOGIC ─────────────── */
+function renderPaymentTable() {
+  const tbody = $('#paymentTableBody');
+  const curKey = getMonthKey(new Date());
+  
+  if (!allSellers.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted)">No sellers found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = allSellers.map(seller => {
+    // Check if current month is paid
+    const paymentRecord = allPayments.find(p => p.sellerId === seller.id && p.month === curKey && p.status === 'paid');
+    const isPaid = !!paymentRecord;
+
+    return `
+      <tr>
+        <td>
+          <div style="font-weight:600">${seller.sellerName || seller.name || 'Unnamed'}</div>
+        </td>
+        <td>
+          <div style="font-size:13px;color:var(--muted)">${seller.name || '—'}</div>
+          <div style="font-size:12px;color:var(--muted)">${seller.email || '—'}</div>
+        </td>
+        <td>
+          <span class="badge ${isPaid ? 'active' : 'inactive'}">
+            ${getMonthLabel(curKey)}: ${isPaid ? 'PAID' : 'DUE'}
+          </span>
+        </td>
+        <td>
+          <button class="btn sm primary" onclick="window.openSellerPaymentModal('${seller.id}')">
+            Manage Payments
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.openSellerPaymentModal = (sellerId) => {
+  activePaymentSellerId = sellerId;
+  const seller = allSellers.find(s => s.id === sellerId);
+  if (!seller) return;
+
+  $('#spmSellerName').textContent = seller.sellerName || seller.name || 'Unnamed';
+  $('#spmSellerEmail').textContent = seller.email || '—';
+
+  // Set default month to current month
+  $('#adminMonthPicker').value = getMonthKey(new Date());
+  
+  updatePaymentModalView();
+  renderPaymentHistory(sellerId);
+
+  show($('#sellerPaymentModal'));
+};
+
+function updatePaymentModalView() {
+  const sellerId = activePaymentSellerId;
+  const monthKey = $('#adminMonthPicker').value;
+  if (!sellerId || !monthKey) return;
+
+  $('#dispSelectedMonth').textContent = getMonthLabel(monthKey);
+  
+  const record = allPayments.find(p => p.sellerId === sellerId && p.month === monthKey && p.status === 'paid');
+  const isPaid = !!record;
+
+  const statusEl = $('#dispPaymentStatus');
+  const btn = $('#toggleMonthStatusBtn');
+
+  if (isPaid) {
+    statusEl.textContent = 'PAID';
+    statusEl.style.color = 'var(--green)';
+    btn.textContent = 'Mark as DUE (Unpaid)';
+    btn.className = 'btn full';
+    btn.style.background = 'var(--red-bg)';
+    btn.style.color = 'var(--red)';
+    btn.style.borderColor = 'rgba(251,113,133,.3)';
+  } else {
+    statusEl.textContent = 'DUE';
+    statusEl.style.color = 'var(--red)';
+    btn.textContent = 'Mark as PAID';
+    btn.className = 'btn primary full';
+    btn.style.background = ''; // reset to default var(--grad)
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }
+}
+
+$('#adminMonthPicker').addEventListener('change', updatePaymentModalView);
+
+$('#toggleMonthStatusBtn').addEventListener('click', async () => {
+  const sellerId = activePaymentSellerId;
+  const monthKey = $('#adminMonthPicker').value;
+  if (!sellerId || !monthKey) return;
+
+  const isPaid = allPayments.some(p => p.sellerId === sellerId && p.month === monthKey && p.status === 'paid');
+  const docId = `${sellerId}_${monthKey}`;
+
+  try {
+    if (isPaid) {
+      await deleteDoc(doc(db, 'seller_payments', docId));
+      toast(`${getMonthLabel(monthKey)} payment marked as DUE.`);
+    } else {
+      const seller = allSellers.find(s => s.id === sellerId);
+      await setDoc(doc(db, 'seller_payments', docId), {
+        sellerId: sellerId,
+        sellerName: seller ? (seller.sellerName || seller.name) : 'Unnamed',
+        month: monthKey,
+        status: 'paid',
+        paidAt: new Date()
+      });
+      toast(`${getMonthLabel(monthKey)} payment marked as PAID.`);
+    }
+  } catch (err) {
+    console.error(err);
+    toast('Failed to update payment status.');
+  }
+});
+
+function renderPaymentHistory(sellerId) {
+  const historyList = $('#sellerPaymentHistoryList');
+  const sellerPayments = allPayments.filter(p => p.sellerId === sellerId && p.status === 'paid');
+
+  const paidRecords = sellerPayments
+    .sort((a, b) => toDate(b.paidAt) - toDate(a.paidAt)); // newest first
+
+  if (!paidRecords.length) {
+    historyList.innerHTML = `<p style="font-size:13px;color:var(--muted);text-align:center;padding:10px;">No payment history yet.</p>`;
+  } else {
+    historyList.innerHTML = paidRecords.map(p => {
+      const pDate = toDate(p.paidAt) || new Date();
+      return `
+        <div class="kv" style="padding:8px 0;border-bottom:1px dashed var(--border)">
+          <span class="k" style="color:var(--text);font-weight:600">${getMonthLabel(p.month)}</span>
+          <span class="v" style="color:var(--green);font-size:12px">Paid on ${fmtDate(pDate)}</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+/* ─────────────── SALES EDIT & DELETE ─────────────── */
+window.editSale = (id) => {
+  const sale = allSales.find(s => s.id === id);
+  if (!sale) return;
+  $('#editSaleId').value = sale.id;
+  $('#editCustomerName').value = sale.customerName || '';
+  $('#editCustomerPhone').value = sale.customerPhone || '';
+  $('#editPhoneModel').value = sale.phoneModel || '';
+  $('#editAdvance').value = sale.advanceAmount || 0;
+  $('#editRest').value = sale.restAmount || 0;
+  $('#editTenure').value = sale.tenure || 0;
+  $('#editInstallment').value = sale.installmentAmount || 0;
+  show($('#editSaleModal'));
+};
+
+$('#editSaleForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('#editSaleId').value;
+  try {
+    await updateDoc(doc(db, 'sales', id), {
+      customerName: $('#editCustomerName').value.trim(),
+      customerPhone: $('#editCustomerPhone').value.trim(),
+      phoneModel: $('#editPhoneModel').value.trim(),
+      advanceAmount: Number($('#editAdvance').value) || 0,
+      restAmount: Number($('#editRest').value) || 0,
+      tenure: Number($('#editTenure').value) || 0,
+      installmentAmount: Number($('#editInstallment').value) || 0,
+      updatedAt: new Date()
+    });
+    toast('Sale updated successfully');
+    hide($('#editSaleModal'));
+  } catch (err) {
+    console.error(err);
+    toast('Failed to update sale');
+  }
+});
+
+window.confirmDeleteSale = (id) => {
+  const sale = allSales.find(s => s.id === id);
+  if (!sale) return;
+  saleToDelete = id;
+  document.getElementById('delCustomerName').textContent = sale.customerName || 'this customer';
+  show($('#deleteConfirmModal'));
+};
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+  if (!saleToDelete) return;
+  try {
+    await deleteDoc(doc(db, 'sales', saleToDelete));
+    toast('Sale deleted successfully');
+    hide($('#deleteConfirmModal'));
+    saleToDelete = null;
+  } catch (err) {
+    console.error(err);
+    toast('Failed to delete sale');
+  }
+});
+
+/* ─────────────── CUSTOMERS TAB LOGIC ─────────────── */
+$('#customerSearchInput').addEventListener('input', renderCustomerTable);
+
+function renderCustomerTable() {
+  const tbody = $('#customerTableBody');
+  const searchTerm = ($('#customerSearchInput').value || '').trim().toLowerCase();
+  
+  // Sort by newest first
+  let sortedSales = [...allSales].sort((a, b) => {
+    const at = toDate(a.saleDate) || toDate(a.createdAt);
+    const bt = toDate(b.saleDate) || toDate(b.createdAt);
+    return bt - at;
+  });
+
+  // Apply search filter if there is a search term
+  if (searchTerm) {
+    sortedSales = sortedSales.filter(s => 
+      (s.customId || '').toLowerCase().includes(searchTerm) || 
+      (s.customerName || '').toLowerCase().includes(searchTerm)
+    );
+  }
+
+  if (!sortedSales.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted)">No customers found matching your search.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = sortedSales.map(sale => {
+    const seller = allSellers.find(u => u.id === sale.ownerId);
+    const sellerName = seller ? (seller.sellerName || seller.name) : 'Unknown Seller';
+    
+    const tenure = Number(sale.tenure) || 0;
+    const paidArr = sale.paidInstallments || [];
+    const paidCount = paidArr.length;
+    
+    let statusHtml = '—';
+    if (tenure > 0) {
+      if (paidCount >= tenure) statusHtml = `<span class="badge active">Fully Paid</span>`;
+      else if (paidCount > 0) statusHtml = `<span class="badge pending">${paidCount}/${tenure} Paid</span>`;
+      else statusHtml = `<span class="badge inactive">Unpaid</span>`;
+    }
+
+    return `
+      <tr>
+        <td>
+          <div style="font-weight:600">${sale.customerName}</div>
+          <div style="font-size:12px;color:var(--muted)">
+            ID: ${sale.customId || '—'} <br> ${sale.customerPhone || '—'}
+          </div>
+        </td>
+        <td>${sellerName}</td>
+        <td>${sale.phoneModel}</td>
+        <td class="red">${money(sale.restAmount)}</td>
+        <td>${tenure} mo</td>
+        <td>${statusHtml}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn sm primary" onclick="window.openPayments('${sale.id}')" ${tenure === 0 ? 'disabled title="No tenure set"' : ''}>
+              Manage Payments
+            </button>
+            <button class="btn-icon edit" onclick="window.editSale('${sale.id}')" title="Edit Customer">✏️</button>
+            <button class="btn-icon delete" onclick="window.confirmDeleteSale('${sale.id}')" title="Delete Customer">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.openPayments = (saleId) => {
+  activeSaleId = saleId;
+  openPaymentModal(saleId);
+};
+
+function openPaymentModal(saleId) {
+  const sale = allSales.find(s => s.id === saleId);
+  if (!sale) return;
+
+  const tenure = Number(sale.tenure) || 0;
+  const rest = Number(sale.restAmount) || 0;
+  
+  // Use the exact installment amount provided by the seller, fallback to 0 if not set
+  const emi = Number(sale.installmentAmount) || 0;
+
+  $('#mCustomerName').textContent = sale.customerName;
+  $('#mCustomerDetails').textContent = `${sale.phoneModel} · ${tenure} Months Tenure`;
+  $('#mRestAmount').textContent = money(rest);
+  $('#mEmiAmount').textContent = money(emi);
+
+  const paidArr = sale.paidInstallments || [];
+  const grid = $('#installmentGrid');
+  
+  let gridHtml = '';
+  for (let i = 1; i <= tenure; i++) {
+    const isPaid = paidArr.includes(i);
+    gridHtml += `
+      <button class="inst-btn ${isPaid ? 'paid' : ''}" onclick="window.togglePayment('${sale.id}', ${i})">
+        <div>Month ${i}</div>
+        <span class="amt">${money(emi)}</span>
+        <div style="font-size:16px;margin-top:4px">${isPaid ? '✓' : '○'}</div>
+      </button>
+    `;
+  }
+  
+  grid.innerHTML = gridHtml;
+  show($('#paymentModal'));
+}
+
+window.togglePayment = async (saleId, monthNum) => {
+  const sale = allSales.find(s => s.id === saleId);
+  if (!sale) return;
+
+  let paidArr = sale.paidInstallments ? [...sale.paidInstallments] : [];
+  
+  if (paidArr.includes(monthNum)) {
+    paidArr = paidArr.filter(m => m !== monthNum); // Mark unpaid
+  } else {
+    paidArr.push(monthNum); // Mark paid
+    paidArr.sort((a, b) => a - b);
+  }
+
+  try {
+    await updateDoc(doc(db, 'sales', saleId), { paidInstallments: paidArr });
+    toast('Payment status updated');
+  } catch (err) {
+    console.error(err);
+    toast('Failed to update payment');
+  }
+};
+
+/* ─────────────── BUSINESS SETTINGS LOGIC ─────────────── */
+async function loadBusinessSettings() {
+  try {
+    const snap = await getDoc(doc(db, 'business_settings', 'main'));
+    if (snap.exists()) {
+      const data = snap.data();
+      $('#setBizName').value = data.businessName || '';
+      $('#setLogo').value = data.logoUrl || '';
+      $('#setAddress').value = data.businessAddress || '';
+      $('#setGstNo').value = data.gstNo || '';
+      $('#setGstRate').value = data.gstRate || '';
+      $('#setHsn').value = data.hsnCode || '';
+      $('#setAccNo').value = data.accountNo || '';
+      $('#setIfsc').value = data.ifscCode || '';
+      $('#setCareNo').value = data.customerCareNo || '';
+      $('#setEmail').value = data.email || '';
+    }
+  } catch (err) {
+    console.error('Error loading settings:', err);
+    toast('Failed to load settings');
+  }
+}
+
+$('#settingsForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.submitter;
+  if (btn) btn.disabled = true;
+
+  try {
+    await setDoc(doc(db, 'business_settings', 'main'), {
+      businessName: $('#setBizName').value.trim(),
+      logoUrl: $('#setLogo').value.trim(),
+      businessAddress: $('#setAddress').value.trim(),
+      gstNo: $('#setGstNo').value.trim(),
+      gstRate: $('#setGstRate').value,
+      hsnCode: $('#setHsn').value.trim(),
+      accountNo: $('#setAccNo').value.trim(),
+      ifscCode: $('#setIfsc').value.trim(),
+      customerCareNo: $('#setCareNo').value.trim(),
+      email: $('#setEmail').value.trim(),
+      updatedAt: new Date()
+    });
+    toast('Business Settings Saved Successfully!');
+  } catch (err) {
+    console.error(err);
+    toast('Error saving settings: ' + err.message);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
